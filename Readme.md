@@ -1,7 +1,7 @@
 # Проект «Большое путешествие»
 
 * Студент: [Anton Antonov](https://up.htmlacademy.ru/ecmascript/16/user/1889489).
-* Наставник: `Андреев Сергей`.
+* Наставник: [Андреев Сергей](https://htmlacademy.ru/profile/id812127).
 
 ---
 
