@@ -8,18 +8,18 @@ import { createSortTemplate } from "./view/sort-view";
 
 const POINT_COUNT = 3;
 
-const siteMainElement = document.querySelector('.trip-main');
-const siteHeaderElement = siteMainElement.querySelector('.trip-controls__navigation');
-const siteFilterElement = siteMainElement.querySelector('.trip-controls__filters');
-const sitePageElement = document.querySelector('.page-main');
-const siteEventElement = sitePageElement.querySelector('.trip-events');
+const mainElement = document.querySelector('.trip-main');
+const headerElement = mainElement.querySelector('.trip-controls__navigation');
+const filterElement = mainElement.querySelector('.trip-controls__filters');
+const pageElement = document.querySelector('.page-main');
+const eventElement = pageElement.querySelector('.trip-events');
 
+renderTemplate(headerElement, createSiteMenuTemplate(), RenderPosition.BEFOREEND);
+renderTemplate(filterElement, createFilterTemplate(), RenderPosition.BEFOREEND);
+renderTemplate(eventElement, createSortTemplate(), RenderPosition.BEFOREEND);
+renderTemplate(eventElement, createEventTemplate(), RenderPosition.AFTEREND);
+renderTemplate(eventElement, createEventEditTemplate(), RenderPosition.BEFOREEND);
 
-renderTemplate(siteHeaderElement, createSiteMenuTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(siteFilterElement, createFilterTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(siteEventElement, createSortTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(siteEventElement, createEventTemplate(), RenderPosition.AFTEREND);
-renderTemplate(siteEventElement, createEventEditTemplate(), RenderPosition.BEFOREEND);
 for (let i = 0; i < POINT_COUNT; i++) {
-  renderTemplate(siteEventElement, createPointTemplate(), RenderPosition.AFTEREND);
+  renderTemplate(eventElement, createPointTemplate(), RenderPosition.AFTEREND);
 }
