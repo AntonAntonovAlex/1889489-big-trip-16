@@ -141,9 +141,9 @@ const cities = [
 ];
 
 const generateTypePoint = () => {
-  const randomIndex = getRandomInteger(0, offerTypes.length - 1);
+  const index = getRandomInteger(0, offerTypes.length - 1);
 
-  return offerTypes[randomIndex];
+  return offerTypes[index];
 };
 
 const generateDestination = () => {
@@ -162,15 +162,15 @@ const generateDestination = () => {
   let description = '';
   const randomValue = getRandomInteger(1, 5);
   for (let i = 0; i < randomValue; i++) {
-    const randomIndex = getRandomInteger(0, descriptions.length - 1);
-    description = description + descriptions[randomIndex];
+    const index = getRandomInteger(0, descriptions.length - 1);
+    description += descriptions[index];
   }
   return description;
 };
 
 const generateCity = () => {
-  const randomIndex = getRandomInteger(0, cities.length - 1);
-  return cities[randomIndex];
+  const index = getRandomInteger(0, cities.length - 1);
+  return cities[index];
 };
 
 const generatePhoto = () => {
@@ -182,7 +182,7 @@ const generatePhoto = () => {
 };
 
 export const generatePoint = () => {
-  const typePoint= generateTypePoint();
+  const typePoint = generateTypePoint();
   return {
     typePoint,
     destinationCity: generateCity(),

@@ -4,8 +4,8 @@ const formatTime = (time) => (String(time).length === 1) ? `0${time}` : time;
 
 const getDuration = (startDate, endDate) => {
   const days = dayjs(endDate).diff(startDate, 'd');
-  const hours = dayjs(endDate).diff(startDate, 'h') - days*24;
-  const minutes = dayjs(endDate).diff(startDate, 'm') - days*24*60 - hours*60;
+  const hours = dayjs(endDate).diff(startDate, 'h') - days * 24;
+  const minutes = dayjs(endDate).diff(startDate, 'm') - days * 24 * 60 - hours * 60;
 
   if (days === 0 && hours === 0) {
     return `${formatTime(minutes)}M`;
