@@ -175,7 +175,8 @@ const generateCity = () => {
 
 const generatePhoto = () => {
   const photos = [];
-  for (let i = 0; i < getRandomInteger(1,10); i++) {
+  const randomValue = getRandomInteger(1,10);
+  for (let i = 0; i < randomValue; i++) {
     photos.push(`http://picsum.photos/248/152?r=${Math.floor(Math.random()*100)}`);
   }
   return photos;

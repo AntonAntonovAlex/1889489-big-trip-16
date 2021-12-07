@@ -1,11 +1,11 @@
 import { generatePoint } from './mock/point';
-import { RenderPosition, renderTemplate } from './render';
-import { createEventTemplate } from './view/event-create-view';
-import { createEventEditTemplate } from './view/event-edit-view';
-import { createFilterTemplate } from './view/filter-view';
-import { createPointTemplate } from './view/point-view';
-import { createSiteMenuTemplate } from './view/site-menu-view';
-import { createSortTemplate } from './view/sort-view';
+import { render, RenderPosition } from './render';
+//import EventCreateView from './view/event-create-view';
+import EventEditView from './view/event-edit-view';
+import FilterView from './view/filter-view';
+import SiteMenuView from './view/site-menu-view';
+import SortView from './view/sort-view';
+import PointView from './view/point-view';
 
 const POINT_COUNT = 6;
 
@@ -17,12 +17,35 @@ const filterElement = mainElement.querySelector('.trip-controls__filters');
 const pageElement = document.querySelector('.page-main');
 const eventElement = pageElement.querySelector('.trip-events');
 
-renderTemplate(headerElement, createSiteMenuTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(filterElement, createFilterTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(eventElement, createSortTemplate(), RenderPosition.BEFOREEND);
-renderTemplate(eventElement, createEventTemplate(points[1]), RenderPosition.AFTEREND);
-renderTemplate(eventElement, createEventEditTemplate(points[0]), RenderPosition.BEFOREEND);
+const renderPoint = (pointElement, point) => {
+  const pointComponent = new PointView(point);
+  const pointEditComponent = new EventEditView(point);
+  const replacePointToForm = () => {
+    pointElement.replaceChild(pointEditComponent.element, pointComponent.element);
+  };
 
-for (let i = 2; i < POINT_COUNT; i++) {
-  renderTemplate(eventElement, createPointTemplate(points[i]), RenderPosition.AFTEREND);
+  const replaceFormToPoint = () => {
+    pointElement.replaceChild(pointComponent.element, pointEditComponent.element);
+  };
+
+  pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replacePointToForm();
+  });
+
+  pointEditComponent.element.addEventListener('submit', (evt) => {
+    evt.preventDefault();
+    replaceFormToPoint();
+  });
+
+  render(pointElement, pointComponent.element, RenderPosition.BEFOREEND);
+};
+
+render(headerElement, new SiteMenuView().element, RenderPosition.BEFOREEND);
+render(eventElement, new SortView().element, RenderPosition.BEFOREEND);
+render(filterElement, new FilterView().element, RenderPosition.AFTERBEGIN);
+//render(eventElement, new EventCreateView(points[0]).element, RenderPosition.BEFOREEND);
+
+
+for (let i = 0; i < POINT_COUNT; i++) {
+  renderPoint(eventElement, points[i]);
 }

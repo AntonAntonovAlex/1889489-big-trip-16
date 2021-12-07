@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { createElement } from '../render';
 
 const offerTypes = [
   'Taxi',
@@ -42,7 +43,7 @@ ${(offers.length === 0) ? '' : `<h3 class="event__section-title  event__section-
 
 </section>`);
 
-export const createEventEditTemplate = (point) => {
+const createEventEditTemplate = (point) => {
   const {endDate, startDate, price, destinationCity, typePoint, offers, destination} = point;
   return `<form class="event event--edit" action="#" method="post">
   <header class="event__header">
@@ -100,3 +101,28 @@ export const createEventEditTemplate = (point) => {
   </section>
 </form>`;
 };
+
+export default class EventEditView {
+  #element = null;
+  #point = null;
+
+  constructor(point) {
+    this.#point = point;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createEventEditTemplate(this.#point);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
