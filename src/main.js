@@ -6,6 +6,8 @@ import FilterView from './view/filter-view';
 import SiteMenuView from './view/site-menu-view';
 import SortView from './view/sort-view';
 import PointView from './view/point-view';
+import PointListView from './view/point-list-view';
+import ListEmptyView from './view/list-empty-view';
 
 const POINT_COUNT = 6;
 
@@ -20,6 +22,7 @@ const eventElement = pageElement.querySelector('.trip-events');
 const renderPoint = (pointElement, point) => {
   const pointComponent = new PointView(point);
   const pointEditComponent = new EventEditView(point);
+
   const replacePointToForm = () => {
     pointElement.replaceChild(pointEditComponent.element, pointComponent.element);
   };
@@ -28,24 +31,46 @@ const renderPoint = (pointElement, point) => {
     pointElement.replaceChild(pointComponent.element, pointEditComponent.element);
   };
 
+  const onEscKeyDown = (evt) => {
+    if (evt.key === 'Escape' || evt.key === 'Esc') {
+      evt.preventDefault();
+      replaceFormToPoint();
+      document.removeEventListener('keydown', onEscKeyDown);
+    }
+  };
+
   pointComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
     replacePointToForm();
+    document.addEventListener('keydown', onEscKeyDown);
   });
 
   pointEditComponent.element.addEventListener('submit', (evt) => {
     evt.preventDefault();
     replaceFormToPoint();
+    document.removeEventListener('keydown', onEscKeyDown);
+  });
+
+  pointEditComponent.element.querySelector('.event__rollup-btn').addEventListener('click', () => {
+    replaceFormToPoint();
+    document.removeEventListener('keydown', onEscKeyDown);
   });
 
   render(pointElement, pointComponent.element, RenderPosition.BEFOREEND);
 };
 
 render(headerElement, new SiteMenuView().element, RenderPosition.BEFOREEND);
-render(eventElement, new SortView().element, RenderPosition.BEFOREEND);
 render(filterElement, new FilterView().element, RenderPosition.AFTERBEGIN);
-//render(eventElement, new EventCreateView(points[0]).element, RenderPosition.BEFOREEND);
+
+if (points.length === 0) {
+  render(eventElement, new ListEmptyView().element, RenderPosition.BEFOREEND);
+} else {
+  render(eventElement, new SortView().element, RenderPosition.BEFOREEND);
+  const pointListComponent = new PointListView();
+  render(eventElement, pointListComponent.element, RenderPosition.BEFOREEND);
+  //render(eventElement, new EventCreateView(points[0]).element, RenderPosition.BEFOREEND);
 
 
-for (let i = 0; i < POINT_COUNT; i++) {
-  renderPoint(eventElement, points[i]);
+  for (let i = 0; i < POINT_COUNT; i++) {
+    renderPoint(pointListComponent.element, points[i]);
+  }
 }
