@@ -1,11 +1,12 @@
 import dayjs from 'dayjs';
+import { createElement } from '../render';
 import { createEventOffers, createEventTypeList } from './event-edit-view';
 
 const createEventPhotos = (photos) => (`
 ${photos.map((photo) => `<img class="event__photo" src="${photo}" alt="Event photo">`)}
 `);
 
-export const createEventTemplate = (point) => {
+const createEventTemplate = (point) => {
   const {  destinationCity, typePoint, offers, destination, photos} = point;
   return `<form class="event event--edit" action="#" method="post">
   <header class="event__header">
@@ -66,3 +67,28 @@ export const createEventTemplate = (point) => {
     </section>
   </section>
 </form>`;};
+
+export default class EventCreateView {
+  #element = null;
+  #point = null;
+
+  constructor(point) {
+    this.#point = point;
+  }
+
+  get element() {
+    if (!this.#element) {
+      this.#element = createElement(this.template);
+    }
+
+    return this.#element;
+  }
+
+  get template() {
+    return createEventTemplate(this.#point);
+  }
+
+  removeElement() {
+    this.#element = null;
+  }
+}
