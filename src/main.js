@@ -67,10 +67,11 @@ if (points.length === 0) {
   render(eventElement, new SortView().element, RenderPosition.BEFOREEND);
   const pointListComponent = new PointListView();
   render(eventElement, pointListComponent.element, RenderPosition.BEFOREEND);
-  //render(eventElement, new EventCreateView(points[0]).element, RenderPosition.BEFOREEND);
-
 
   for (let i = 0; i < POINT_COUNT; i++) {
     renderPoint(pointListComponent.element, points[i]);
   }
 }
+
+//отрисовка формы добавления новой точки
+//render(eventElement, new EventCreateView(points[0]).element, RenderPosition.BEFOREEND);
