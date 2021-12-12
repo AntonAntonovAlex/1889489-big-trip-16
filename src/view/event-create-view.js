@@ -1,5 +1,5 @@
 import dayjs from 'dayjs';
-import { createElement } from '../render';
+import AbstractView from './abstract-view';
 import { createEventOffers, createEventTypeList } from './event-edit-view';
 
 const createEventPhotos = (photos) => (`
@@ -68,27 +68,15 @@ const createEventTemplate = (point) => {
   </section>
 </form>`;};
 
-export default class EventCreateView {
-  #element = null;
+export default class EventCreateView extends AbstractView {
   #point = null;
 
   constructor(point) {
+    super();
     this.#point = point;
-  }
-
-  get element() {
-    if (!this.#element) {
-      this.#element = createElement(this.template);
-    }
-
-    return this.#element;
   }
 
   get template() {
     return createEventTemplate(this.#point);
-  }
-
-  removeElement() {
-    this.#element = null;
   }
 }
