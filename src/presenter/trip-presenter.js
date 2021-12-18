@@ -1,4 +1,6 @@
+import { SortType } from '../const';
 import { render, RenderPosition, updateItem } from '../render';
+import { sortPointPrice, sortPointTime } from '../utils/utils';
 import FilterView from '../view/filter-view';
 import ListEmptyView from '../view/list-empty-view';
 import PointListView from '../view/point-list-view';
@@ -22,6 +24,8 @@ export default class TripPresenter {
 
   #tripPoints = [];
   #pointPresenter = new Map();
+  #currentSortType = SortType.DEFAULT;
+  #sourcedTripPoints = [];
 
   constructor(headerContainer, filterContainer, tripContainer) {
     this.#headerContainer = headerContainer;
@@ -31,6 +35,7 @@ export default class TripPresenter {
 
   init = (tripPoints) => {
     this.#tripPoints = [...tripPoints];
+    this.#sourcedTripPoints = [...tripPoints];
 
     this.#renderSiteMenu();
     this.#renderFilter();
@@ -43,6 +48,7 @@ export default class TripPresenter {
 
   #handlePointChange = (updatedPoint) => {
     this.#tripPoints = updateItem(this.#tripPoints, updatedPoint);
+    this.#sourcedTripPoints = updateItem(this.#sourcedTripPoints, updatedPoint);
     this.#pointPresenter.get(updatedPoint.id).init(updatedPoint);
   }
 
@@ -58,8 +64,34 @@ export default class TripPresenter {
     render(this.#tripContainer, this.#listEmptyComponent, RenderPosition.BEFOREEND);
   }
 
+  #sortPoint = (sortType) => {
+    switch (sortType) {
+      case SortType.PRICE:
+        this.#tripPoints.sort(sortPointPrice);
+        break;
+      case SortType.TIME:
+        this.#tripPoints.sort(sortPointTime);
+        break;
+      default:
+        this.#tripPoints = [...this.#sourcedTripPoints];
+    }
+
+    this.#currentSortType = sortType;
+  }
+
+  #handleSortTypeChange = (sortType) => {
+    if (this.#currentSortType === sortType) {
+      return;
+    }
+
+    this.#sortPoint(sortType);
+    this.#clearPointList();
+    this.#renderPoints();
+  }
+
   #renderSort = () => {
     render(this.#tripContainer, this.#sortComponent, RenderPosition.BEFOREEND);
+    this.#sortComponent.setSortTypeChangeHandler(this.#handleSortTypeChange);
   }
 
   #renderList = () => {
