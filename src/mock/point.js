@@ -1,4 +1,5 @@
 import dayjs from 'dayjs';
+import { nanoid } from 'nanoid';
 
 const getRandomInteger = (a = 0, b = 1) => {
   const lower = Math.ceil(Math.min(a, b));
@@ -185,6 +186,7 @@ const generatePhoto = () => {
 export const generatePoint = () => {
   const typePoint = generateTypePoint();
   return {
+    id: nanoid(),
     typePoint,
     destinationCity: generateCity(),
     offers: offer[typePoint],
