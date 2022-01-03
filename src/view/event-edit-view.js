@@ -1,7 +1,9 @@
 import dayjs from 'dayjs';
+import flatpickr from 'flatpickr';
 import { cities, destinations, offers } from '../mock/point';
 import SmartView from './smart-view';
 
+import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const offerTypes = [
   'Taxi',
@@ -118,6 +120,8 @@ const createEventEditTemplate = (data) => {
 };
 
 export default class EventEditView extends SmartView {
+  #startdatepicker = null;
+  #enddatepicker = null;
 
   constructor(point) {
     super();
@@ -125,10 +129,25 @@ export default class EventEditView extends SmartView {
 
     this.setEventToggleHandler();
     this.setCityToggleHandler();
+    this.#setDatepicker();
   }
 
   get template() {
     return createEventEditTemplate(this._data);
+  }
+
+  removeElement = () => {
+    super.removeElement();
+
+    if (this.#startdatepicker) {
+      this.#startdatepicker.destroy();
+      this.#startdatepicker = null;
+    }
+
+    if (this.#enddatepicker) {
+      this.#enddatepicker.destroy();
+      this.#enddatepicker = null;
+    }
   }
 
   reset = (point) => {
@@ -140,6 +159,7 @@ export default class EventEditView extends SmartView {
   restoreHandlers = () => {
     this.setEventToggleHandler();
     this.setCityToggleHandler();
+    this.#setDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
     this.setRemoveClickHandler(this._callback.editClick);
   }
@@ -163,6 +183,41 @@ export default class EventEditView extends SmartView {
     this.element.querySelector('.event__input--destination')
       .addEventListener('change', this.#ciyttToggleHandler);
   }
+
+  #setDatepicker = () => {
+    this.#startdatepicker = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._data.startDate,
+        onChange: this.#startDateChangeHandler,
+      },
+    );
+
+    this.#enddatepicker = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._data.endDate,
+        onChange: this.#endDateChangeHandler,
+      },
+    );
+  }
+
+  #startDateChangeHandler = ([userDate]) => {
+    this.updateData({
+      startDate: userDate,
+    });
+  }
+
+  #endDateChangeHandler = ([userDate]) => {
+    this.updateData({
+      endDate: userDate,
+    });
+  }
+
 
   #ciyttToggleHandler = (evt) => {
     evt.preventDefault();
