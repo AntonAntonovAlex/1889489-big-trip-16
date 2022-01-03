@@ -25,17 +25,19 @@ const createEventOffer = (offers) => {
     return offerTemplate;
   }
   offers.forEach((offer) => {
-    offerTemplate += `<li class="event__offer">
+    if (offer.selected) {
+      offerTemplate += `<li class="event__offer">
     <span class="event__offer-title">${offer.title}</span>
     &plus;&euro;&nbsp;
     <span class="event__offer-price">${offer.price}</span>
   </li>`;
+    }
   });
   return offerTemplate;
 };
 
 const createPointTemplate = (point) => {
-  const {endDate, startDate, price, destinationCity, isFavorite, typePoint, offers} = point;
+  const {endDate, startDate, price, city, isFavorite, typePoint, offers} = point;
   const favoriteClassName = isFavorite
     ? 'event__favorite-btn--active'
     : '';
@@ -46,7 +48,7 @@ const createPointTemplate = (point) => {
     <div class="event__type">
       <img class="event__type-icon" width="42" height="42" src="img/icons/${typePoint.toLowerCase()}.png" alt="Event type icon">
     </div>
-    <h3 class="event__title">${typePoint} ${destinationCity}</h3>
+    <h3 class="event__title">${typePoint} ${city}</h3>
     <div class="event__schedule">
       <p class="event__time">
         <time class="event__start-time" datetime="${dayjs(startDate).format('YYYY-MM-DTHH:mm')}">${dayjs(startDate).format('HH:mm')}</time>

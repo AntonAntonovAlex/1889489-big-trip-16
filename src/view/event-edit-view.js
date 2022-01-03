@@ -1,5 +1,7 @@
 import dayjs from 'dayjs';
-import AbstractView from './abstract-view';
+import { cities, destinations, offers } from '../mock/point';
+import SmartView from './smart-view';
+
 
 const offerTypes = [
   'Taxi',
@@ -12,6 +14,14 @@ const offerTypes = [
   'Sightseeing',
   'Restaurant',
 ];
+
+const createListCities = () => (`
+${cities.map((city) => `<option value="${city}"></option>`)}
+`);
+
+const createEventPhotos = (photos) => (`
+${photos.map((photo) => `<img class="event__photo" src="${photo}" alt="Event photo">`)}
+`);
 
 export const createEventTypeList = (typePoint) => (
   `<div class="event__type-list">
@@ -26,11 +36,11 @@ export const createEventTypeList = (typePoint) => (
 </div>`
 );
 
-export const createEventOffers = (offers) => (`<section class="event__section  event__section--offers">
-${(offers.length === 0) ? '' : `<h3 class="event__section-title  event__section-title--offers">Offers</h3>
+export const createEventOffers = (pointOffers) => (`<section class="event__section  event__section--offers">
+${(pointOffers.length === 0) ? '' : `<h3 class="event__section-title  event__section-title--offers">Offers</h3>
 <div class="event__available-offers">
-  ${offers.map((offer) => `<div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="event-offer-${offer.id}"
+  ${pointOffers.map((offer) => `<div class="event__offer-selector">
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="${offer.id}"
     ${(offer.selected) ? 'checked' : ''}>
     <label class="event__offer-label" for="event-offer-${offer.id}">
       <span class="event__offer-title">${offer.title}</span>
@@ -43,8 +53,8 @@ ${(offers.length === 0) ? '' : `<h3 class="event__section-title  event__section-
 
 </section>`);
 
-const createEventEditTemplate = (point) => {
-  const {endDate, startDate, price, destinationCity, typePoint, offers, destination} = point;
+const createEventEditTemplate = (data) => {
+  const {endDate, startDate, price, typePoint, city} = data;
   return `<form class="event event--edit" action="#" method="post">
   <header class="event__header">
     <div class="event__type-wrapper">
@@ -61,11 +71,10 @@ const createEventEditTemplate = (point) => {
       <label class="event__label  event__type-output" for="event-destination-1">
       ${typePoint}
       </label>
-      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${destinationCity}" list="destination-list-1">
+      <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city}" list="destination-list-1">
       <datalist id="destination-list-1">
-        <option value="Amsterdam"></option>
-        <option value="Geneva"></option>
-        <option value="Copenhagen"></option>
+      ${createListCities()}
+
       </datalist>
     </div>
 
@@ -93,25 +102,46 @@ const createEventEditTemplate = (point) => {
   </header>
   <section class="event__details">
 
-  ${createEventOffers(offers)}
+  ${createEventOffers(offers[typePoint.toLowerCase()])}
     <section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-      <p class="event__destination-description">${destination}</p>
+      <p class="event__destination-description">${destinations[city.toLowerCase()].description}</p>
+
+      <div class="event__photos-container">
+        <div class="event__photos-tape">
+        ${createEventPhotos(destinations[city.toLowerCase()].pictures)}
+        </div>
+      </div>
     </section>
   </section>
 </form>`;
 };
 
-export default class EventEditView extends AbstractView {
-  #point = null;
+export default class EventEditView extends SmartView {
 
   constructor(point) {
     super();
-    this.#point = point;
+    this._data = EventEditView.parsePointToData(point);
+
+    this.setEventToggleHandler();
+    this.setCityToggleHandler();
   }
 
   get template() {
-    return createEventEditTemplate(this.#point);
+    return createEventEditTemplate(this._data);
+  }
+
+  reset = (point) => {
+    this.updateData(
+      EventEditView.parsePointToData(point),
+    );
+  }
+
+  restoreHandlers = () => {
+    this.setEventToggleHandler();
+    this.setCityToggleHandler();
+    this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setRemoveClickHandler(this._callback.editClick);
   }
 
   setFormSubmitHandler = (callback) => {
@@ -119,18 +149,59 @@ export default class EventEditView extends AbstractView {
     this.element.addEventListener('submit', this.#formSubmitHandler);
   }
 
-  #formSubmitHandler = (evt) => {
-    evt.preventDefault();
-    this._callback.formSubmit(this.#point);
-  }
-
   setRemoveClickHandler = (callback) => {
     this._callback.editClick = callback;
     this.element.querySelector('.event__rollup-btn').addEventListener('click', this.#editClickHandler);
+  }
+
+  setEventToggleHandler = () => {
+    this.element.querySelector('.event__type-group')
+      .addEventListener('change', this.#eventToggleHandler);
+  }
+
+  setCityToggleHandler = () => {
+    this.element.querySelector('.event__input--destination')
+      .addEventListener('change', this.#ciyttToggleHandler);
+  }
+
+  #ciyttToggleHandler = (evt) => {
+    evt.preventDefault();
+    this.updateData({
+      city : evt.target.value,
+    });
+  }
+
+  #eventToggleHandler = (evt) => {
+    evt.preventDefault();
+    this.updateData({
+      typePoint : evt.target.value,
+      offers : offers[evt.target.value],
+    });
+  }
+
+  #formSubmitHandler = (evt) => {
+    evt.preventDefault();
+    this.element.querySelectorAll('.event__offer-checkbox').forEach((element) => {
+      this._data.offers[element.name-1].selected = element.checked;
+    });
+    this._callback.formSubmit(EventEditView.parseDataToPoint(this._data));
   }
 
   #editClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.editClick();
   }
+
+  static parsePointToData = (point) => {
+    const data = {...point};
+    //const data = {...point, offers: point.offers.map((value) => ({...value})), photos: [...point.photos]};
+    return data;
+  };
+
+  static parseDataToPoint = (data) => {
+    const point = {...data};
+    //const point = {...data, offers: data.offers.map((value) => ({...value})), photos: [...data.photos]};
+    return point;
+  };
+
 }

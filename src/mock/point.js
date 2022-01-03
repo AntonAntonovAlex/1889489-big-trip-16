@@ -20,7 +20,7 @@ const offerTypes = [
   'restaurant',
 ];
 
-const offer = {
+export const offers = {
   'taxi': [
     {
       'id' : 1,
@@ -133,7 +133,7 @@ const offer = {
   ],
 };
 
-const cities = [
+export const cities = [
   'Vienna',
   'Vancouver',
   'Munich',
@@ -171,7 +171,7 @@ const generateDestination = () => {
 
 const generateCity = () => {
   const index = getRandomInteger(0, cities.length - 1);
-  return cities[index];
+  return cities[index].toLowerCase();
 };
 
 const generatePhoto = () => {
@@ -183,18 +183,49 @@ const generatePhoto = () => {
   return photos;
 };
 
+const generateDestinations = () => ({
+  vienna: {
+    name: 'Vienna',
+    pictures: generatePhoto(),
+    description: generateDestination(),
+  },
+  vancouver: {
+    name: 'Vancouver',
+    pictures: generatePhoto(),
+    description: generateDestination(),
+  },
+  munich: {
+    name: 'Munich',
+    pictures: generatePhoto(),
+    description: generateDestination(),
+  },
+  copenhagen: {
+    name: 'Copenhagen',
+    pictures: generatePhoto(),
+    description: generateDestination(),
+  },
+  berlin: {
+    name: 'Berlin',
+    pictures: generatePhoto(),
+    description: generateDestination(),
+  },
+});
+
+export const destinations = generateDestinations();
+
 export const generatePoint = () => {
   const typePoint = generateTypePoint();
+  const city = generateCity();
   return {
     id: nanoid(),
     typePoint,
-    destinationCity: generateCity(),
-    offers: offer[typePoint],
-    destination: generateDestination(),
-    photos: generatePhoto(),
+    offers: offers[typePoint],
     price: getRandomInteger(1, 10000),
     startDate: dayjs().add(- Math.floor(Math.random()*10000), 'minute').toDate(),
     endDate: dayjs().add(Math.floor(Math.random()*1000), 'minute').toDate(),
     isFavorite: Boolean(getRandomInteger(0,1)),
+    description: destinations[city].description,
+    pictures: destinations[city].pictures,
+    city: destinations[city].name,
   };
 };

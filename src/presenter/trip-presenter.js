@@ -56,7 +56,7 @@ export default class TripPresenter {
   }
 
   #renderFilter = () => {
-    render(this.#filterContainer, this.#filterComponent, RenderPosition.AFTERBEGIN);
+    render(this.#filterContainer, this.#filterComponent, RenderPosition.BEFOREEND);
   }
 
   #renderListEmpty = () => {
