@@ -82,12 +82,14 @@ export default class PointPresenter {
   #onEscKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
+      this.#pointEditComponent.reset(this.#point);
       this.#replaceFormToPoint();
     }
   }
 
   #handleEditClick = () => {
     this.#replacePointToForm();
+    this.#pointEditComponent.reset(this.#point);
   }
 
   #handleFavoriteClick = () => {
@@ -100,6 +102,7 @@ export default class PointPresenter {
   }
 
   #handleRemoveClick = () => {
+    this.#pointEditComponent.reset(this.#point);
     this.#replaceFormToPoint();
   }
 }
