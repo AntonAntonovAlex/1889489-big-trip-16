@@ -2,7 +2,6 @@ import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
 import { cities, destinations, offers } from '../mock/point';
 import SmartView from './smart-view';
-
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
 const offerTypes = [
