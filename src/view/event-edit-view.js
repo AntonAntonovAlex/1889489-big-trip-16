@@ -61,7 +61,8 @@ const createEventEditTemplate = (data) => {
     <div class="event__type-wrapper">
       <label class="event__type  event__type-btn" for="event-type-toggle-1">
         <span class="visually-hidden">Choose event type</span>
-        <img class="event__type-icon" width="17" height="17" src="img/icons/${typePoint.toLowerCase()}.png" alt="Event type icon">
+        ${`<img class="event__type-icon" width="17" height="17" src="img/icons/${typePoint.toLowerCase()}.png" alt="Event type icon"></img>`}
+
       </label>
       <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
       ${createEventTypeList(typePoint)}
@@ -92,11 +93,12 @@ const createEventEditTemplate = (data) => {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="text" name="event-price" value="${price}">
+      <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price}">
     </div>
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
     <button class="event__reset-btn" type="reset">Delete</button>
+
     <button class="event__rollup-btn" type="button">
       <span class="visually-hidden">Open event</span>
     </button>
@@ -105,8 +107,10 @@ const createEventEditTemplate = (data) => {
 
   ${createEventOffers(offers[typePoint.toLowerCase()])}
     <section class="event__section  event__section--destination">
-      <h3 class="event__section-title  event__section-title--destination">Destination</h3>
-      <p class="event__destination-description">${destinations[city.toLowerCase()].description}</p>
+      <h3 class="event__section-title  event__section-title--destination"> 'Destination'</h3>
+      <p class="event__destination-description">
+      ${destinations[city.toLowerCase()].description}
+      </p>
 
       <div class="event__photos-container">
         <div class="event__photos-tape">
@@ -160,12 +164,18 @@ export default class EventEditView extends SmartView {
     this.setCityToggleHandler();
     this.#setDatepicker();
     this.setFormSubmitHandler(this._callback.formSubmit);
+    this.setDeleteClickHandler(this._callback.deleteClick);
     this.setRemoveClickHandler(this._callback.editClick);
   }
 
   setFormSubmitHandler = (callback) => {
     this._callback.formSubmit = callback;
     this.element.addEventListener('submit', this.#formSubmitHandler);
+  }
+
+  setDeleteClickHandler = (callback) => {
+    this._callback.deleteClick = callback;
+    this.element.querySelector('.event__reset-btn').addEventListener('click', this.#formDeleteClickHandler);
   }
 
   setRemoveClickHandler = (callback) => {
@@ -235,10 +245,16 @@ export default class EventEditView extends SmartView {
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
+    this._data.price = this.element.querySelector('.event__input--price').value;
     this.element.querySelectorAll('.event__offer-checkbox').forEach((element) => {
       this._data.offers[element.name-1].selected = element.checked;
     });
     this._callback.formSubmit(EventEditView.parseDataToPoint(this._data));
+  }
+
+  #formDeleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this._callback.deleteClick(EventEditView.parseDataToPoint(this._data));
   }
 
   #editClickHandler = (evt) => {
