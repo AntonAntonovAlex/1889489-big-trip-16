@@ -25,6 +25,8 @@
     "@babel/plugin-proposal-nullish-coalescing-operator": "7.16.0",
     "@babel/plugin-proposal-optional-chaining": "7.16.0",
     "babel-loader": "8.2.3",
+    "chart.js": "2.9.4",
+    "chartjs-plugin-datalabels": "0.7.0",
     "dayjs": "1.10.7",
     "flatpickr": "4.6.9",
     "nanoid": "3.1.30",

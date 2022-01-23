@@ -2,7 +2,6 @@ import { nanoid } from 'nanoid';
 import { UpdateType, UserAction } from '../const';
 import { remove, render, RenderPosition } from '../render';
 import EventCreateView from '../view/event-create-view';
-//import EventEditView from '../view/event-edit-view';
 
 export default class PointNewPresenter {
   #pointListContainer = null;
@@ -19,7 +18,6 @@ export default class PointNewPresenter {
       return;
     }
 
-    //this.#pointEditComponent = new EventEditView();
     this.#pointEditComponent = new EventCreateView();
 
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);

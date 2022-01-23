@@ -1,23 +1,6 @@
 import dayjs from 'dayjs';
+import { getDurationFormat } from '../utils/duration';
 import AbstractView from './abstract-view';
-
-const formatTime = (time) => (String(time).length === 1) ? `0${time}` : time;
-
-const getDuration = (startDate, endDate) => {
-  const days = dayjs(endDate).diff(startDate, 'd');
-  const hours = dayjs(endDate).diff(startDate, 'h') - days * 24;
-  const minutes = dayjs(endDate).diff(startDate, 'm') - days * 24 * 60 - hours * 60;
-
-  if (days === 0 && hours === 0) {
-    return `${formatTime(minutes)}M`;
-  }
-
-  if (days === 0 ) {
-    return `${formatTime(hours)}H ${formatTime(minutes)}M`;
-  }
-
-  return `${formatTime(days)}D ${formatTime(hours)}H ${formatTime(minutes)}M`;
-};
 
 const createEventOffer = (offers) => {
   let offerTemplate = '';
@@ -55,7 +38,7 @@ const createPointTemplate = (point) => {
         &mdash;
         <time class="event__end-time" datetime="${dayjs(endDate).format('YYYY-MM-DTHH:mm')}">${dayjs(endDate).format('HH:mm')}</time>
       </p>
-      <p class="event__duration">${getDuration(startDate, endDate)}</p>
+      <p class="event__duration">${getDurationFormat(dayjs(endDate).diff(startDate, 'ms'))}</p>
     </div>
     <p class="event__price">
       &euro;&nbsp;<span class="event__price-value">${price}</span>

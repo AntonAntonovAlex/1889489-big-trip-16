@@ -99,7 +99,7 @@ const createEventEditTemplate = (data) => {
     </div>
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
-    <button class="event__reset-btn" type="reset">Delete</button>
+    <button class="event__reset-btn" type="reset">Cancel</button>
   </header>
   <section class="event__details">
 
@@ -187,7 +187,7 @@ export default class EventCreateView extends SmartView {
 
   setCityToggleHandler = () => {
     this.element.querySelector('.event__input--destination')
-      .addEventListener('change', this.#ciyttToggleHandler);
+      .addEventListener('change', this.#cityToggleHandler);
   }
 
   #setDatepicker = () => {
@@ -225,8 +225,11 @@ export default class EventCreateView extends SmartView {
   }
 
 
-  #ciyttToggleHandler = (evt) => {
+  #cityToggleHandler = (evt) => {
     evt.preventDefault();
+    if (!cities.includes(evt.target.value)) {
+      evt.target.value = cities[0];
+    }
     this.updateData({
       city : evt.target.value,
     });
@@ -256,13 +259,11 @@ export default class EventCreateView extends SmartView {
 
   static parsePointToData = (point) => {
     const data = {...point};
-    //const data = {...point, offers: point.offers.map((value) => ({...value})), photos: [...point.photos]};
     return data;
   };
 
   static parseDataToPoint = (data) => {
     const point = {...data};
-    //const point = {...data, offers: data.offers.map((value) => ({...value})), photos: [...data.photos]};
     return point;
   };
 

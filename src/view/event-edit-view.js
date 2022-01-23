@@ -190,7 +190,7 @@ export default class EventEditView extends SmartView {
 
   setCityToggleHandler = () => {
     this.element.querySelector('.event__input--destination')
-      .addEventListener('change', this.#ciyttToggleHandler);
+      .addEventListener('change', this.#cityToggleHandler);
   }
 
   #setDatepicker = () => {
@@ -228,8 +228,11 @@ export default class EventEditView extends SmartView {
   }
 
 
-  #ciyttToggleHandler = (evt) => {
+  #cityToggleHandler = (evt) => {
     evt.preventDefault();
+    if (!cities.includes(evt.target.value)) {
+      evt.target.value = this._data.city;
+    }
     this.updateData({
       city : evt.target.value,
     });
@@ -264,13 +267,11 @@ export default class EventEditView extends SmartView {
 
   static parsePointToData = (point) => {
     const data = {...point};
-    //const data = {...point, offers: point.offers.map((value) => ({...value})), photos: [...point.photos]};
     return data;
   };
 
   static parseDataToPoint = (data) => {
     const point = {...data};
-    //const point = {...data, offers: data.offers.map((value) => ({...value})), photos: [...data.photos]};
     return point;
   };
 
