@@ -1,3 +1,4 @@
+import { UpdateType, UserAction } from '../const';
 import { remove, render, RenderPosition, replace } from '../render';
 import EventEditView from '../view/event-edit-view';
 import PointView from '../view/point-view';
@@ -36,6 +37,7 @@ export default class PointPresenter {
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
+    this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
     this.#pointEditComponent.setRemoveClickHandler(this.#handleRemoveClick);
 
     if (prevPointComponent === null || prevPointEditComponent === null) {
@@ -93,13 +95,29 @@ export default class PointPresenter {
   }
 
   #handleFavoriteClick = () => {
-    this.#changeData({...this.#point, isFavorite: !this.#point.isFavorite});
+    this.#changeData(
+      UserAction.UPDATE_POINT,
+      UpdateType.PATCH,
+      {...this.#point, isFavorite: !this.#point.isFavorite}
+    );
   }
 
   #handleFormSubmit = (point) => {
-    this.#changeData(point);
+    this.#changeData(
+      UserAction.UPDATE_POINT,
+      UpdateType.MINOR,
+      point
+    );
     this.#replaceFormToPoint();
   }
+
+  #handleDeleteClick = (point) => {
+    this.#changeData(
+      UserAction.DELETE_POINT,
+      UpdateType.MINOR,
+      point,
+    );
+  };
 
   #handleRemoveClick = () => {
     this.#pointEditComponent.reset(this.#point);
