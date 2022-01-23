@@ -71,6 +71,7 @@ eventAddButton.addEventListener('click', (evt) => {
   tripPresenter.init();
   tripPresenter.createPoint();
   eventAddButton.disabled = true;
+  activeMenuItem = MenuItem.TABLE;
   headerElement.querySelector(`[id=${MenuItem.TABLE}]`)?.classList.add('trip-tabs__btn--active');
   headerElement.querySelector(`[id=${MenuItem.STATISTICS}]`)?.classList.remove('trip-tabs__btn--active');
 });
