@@ -25,14 +25,14 @@ export default class PointPresenter {
     this.#changeMode = changeMode;
   }
 
-  init = (point) => {
+  init = (point, destinations, offers) => {
     this.#point = point;
 
     const prevPointComponent = this.#pointComponent;
     const prevPointEditComponent = this.#pointEditComponent;
 
     this.#pointComponent = new PointView(point);
-    this.#pointEditComponent = new EventEditView(point);
+    this.#pointEditComponent = new EventEditView(point, destinations, offers);
 
     this.#pointComponent.setEditClickHandler(this.#handleEditClick);
     this.#pointComponent.setFavoriteClickHandler(this.#handleFavoriteClick);
@@ -97,7 +97,7 @@ export default class PointPresenter {
   #handleFavoriteClick = () => {
     this.#changeData(
       UserAction.UPDATE_POINT,
-      UpdateType.PATCH,
+      UpdateType.MINOR,
       {...this.#point, isFavorite: !this.#point.isFavorite}
     );
   }

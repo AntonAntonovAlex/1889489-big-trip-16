@@ -1,10 +1,10 @@
 import dayjs from 'dayjs';
 import flatpickr from 'flatpickr';
-import { cities, destinations, offers } from '../mock/point';
+//import { cities, destinations, offers } from '../mock/point';
 import SmartView from './smart-view';
 import '../../node_modules/flatpickr/dist/flatpickr.min.css';
 
-const offerTypes = [
+/*const offerTypes = [
   'Taxi',
   'Bus',
   'Train',
@@ -14,35 +14,34 @@ const offerTypes = [
   'Check-in',
   'Sightseeing',
   'Restaurant',
-];
+];*/
 
-const createListCities = () => (`
-${cities.map((city) => `<option value="${city}"></option>`)}
+const createListCities = (destinations) => (`
+${destinations.map((destination) => `<option value="${destination.name}"></option>`)}
 `);
 
 const createEventPhotos = (photos) => (`
-${photos.map((photo) => `<img class="event__photo" src="${photo}" alt="Event photo">`)}
+${photos.map((photo) => `<img class="event__photo" src="${photo.src}" alt="${photo.description}">`)}
 `);
 
-export const createEventTypeList = (typePoint) => (
+const createEventTypeList = (typePoint, offerTypes) => (
   `<div class="event__type-list">
   <fieldset class="event__type-group">
     <legend class="visually-hidden">Event type</legend>
     ${offerTypes.map((type) => `<div class="event__type-item">
     <input id="event-type-${type.toLowerCase()}-1" class="event__type-input  visually-hidden" type="radio" name="event-type" value="${type.toLowerCase()}"
-    ${(typePoint.toLowerCase() === type.toLowerCase()) ? 'checked' : ''}>
+    ${(typePoint === type.toLowerCase()) ? 'checked' : ''}>
     <label class="event__type-label  event__type-label--${type.toLowerCase()}" for="event-type-${type.toLowerCase()}-1">${type}</label>
   </div>`).join('')}
   </fieldset>
 </div>`
 );
 
-export const createEventOffers = (pointOffers) => (`<section class="event__section  event__section--offers">
-${(pointOffers.length === 0) ? '' : `<h3 class="event__section-title  event__section-title--offers">Offers</h3>
+const createEventOffers = (typePointAllOffers) => (`<section class="event__section  event__section--offers">
+${(typePointAllOffers.length === 0) ? '' : `<h3 class="event__section-title  event__section-title--offers">Offers</h3>
 <div class="event__available-offers">
-  ${pointOffers.map((offer) => `<div class="event__offer-selector">
-    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="${offer.id}"
-    ${(offer.selected) ? 'checked' : ''}>
+  ${typePointAllOffers.map((offer) => `<div class="event__offer-selector">
+    <input class="event__offer-checkbox  visually-hidden" id="event-offer-${offer.id}" type="checkbox" name="${offer.id}">
     <label class="event__offer-label" for="event-offer-${offer.id}">
       <span class="event__offer-title">${offer.title}</span>
       &plus;&euro;&nbsp;
@@ -54,8 +53,9 @@ ${(pointOffers.length === 0) ? '' : `<h3 class="event__section-title  event__sec
 
 </section>`);
 
-const createEventEditTemplate = (data) => {
+const createEventEditTemplate = (data, destinations, offers) => {
   const {endDate, startDate, price, city} = data;
+  const pointDestination = destinations.find((destination) => destination.name === city);
   let {typePoint} = data;
   typePoint = typePoint === undefined ? 'Flight' : typePoint;
   return `<form class="event event--edit" action="#" method="post">
@@ -67,7 +67,7 @@ const createEventEditTemplate = (data) => {
 
       </label>
       <input class="event__type-toggle  visually-hidden" id="event-type-toggle-1" type="checkbox">
-      ${createEventTypeList(typePoint)}
+      ${createEventTypeList(typePoint, offers.map((offerType) => offerType.type))}
 
     </div>
 
@@ -77,7 +77,7 @@ const createEventEditTemplate = (data) => {
       </label>
       <input class="event__input  event__input--destination" id="event-destination-1" type="text" name="event-destination" value="${city === undefined ? '' : city}" list="destination-list-1">
       <datalist id="destination-list-1">
-      ${createListCities()}
+      ${createListCities(destinations)}
 
       </datalist>
     </div>
@@ -95,7 +95,7 @@ const createEventEditTemplate = (data) => {
         <span class="visually-hidden">Price</span>
         &euro;
       </label>
-      <input class="event__input  event__input--price" id="event-price-1" type="number" name="event-price" value="${price === undefined ? '0' : price}">
+      <input class="event__input  event__input--price" id="event-price-1" type="number" min="0" name="event-price" value="${price === undefined ? '0' : price}">
     </div>
 
     <button class="event__save-btn  btn  btn--blue" type="submit">Save</button>
@@ -103,17 +103,17 @@ const createEventEditTemplate = (data) => {
   </header>
   <section class="event__details">
 
-  ${typePoint === undefined ? '' : createEventOffers(offers[typePoint.toLowerCase()])}
+  ${typePoint === undefined ? '' : createEventOffers(offers.find((offer) => offer.type === typePoint).offers)}
     <section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">
       ${city === undefined ? '': 'Destination'}</h3>
       <p class="event__destination-description">
-      ${city === undefined ? '': destinations[city.toLowerCase()].description}
+      ${city === undefined ? '': pointDestination.description}
       </p>
 
       <div class="event__photos-container">
         <div class="event__photos-tape">
-        ${city === undefined ? '': createEventPhotos(destinations[city.toLowerCase()].pictures)}
+        ${city === undefined ? '': createEventPhotos(pointDestination.pictures)}
         </div>
       </div>
     </section>
@@ -125,21 +125,23 @@ export default class EventCreateView extends SmartView {
   #startdatepicker = null;
   #enddatepicker = null;
 
-  constructor(point) {
+  constructor(destinations, offers) {
     super();
-    this._data = EventCreateView.parsePointToData(point);
+    this._data = {};
+
+    this._destinations = destinations;
+    this._offers = offers;
+    this._data.typePoint = 'flight';
+    this._data.offers = {};
+    //this._data.offers =  offers.find((offer) => offer.type === this._data.typePoint).offers;
 
     this.setEventToggleHandler();
     this.setCityToggleHandler();
     this.#setDatepicker();
-
-    this._data.typePoint = 'flight';
-    this._data.offers = offers[this._data.typePoint];
-
   }
 
   get template() {
-    return createEventEditTemplate(this._data);
+    return createEventEditTemplate(this._data, this._destinations, this._offers);
   }
 
   removeElement = () => {
@@ -227,9 +229,13 @@ export default class EventCreateView extends SmartView {
 
   #cityToggleHandler = (evt) => {
     evt.preventDefault();
+    const cities = this._destinations.map((destination) => destination.name);
     if (!cities.includes(evt.target.value)) {
       evt.target.value = cities[0];
     }
+    /*if (!cities.includes(evt.target.value)) {
+      evt.target.value = cities[0];
+    }*/
     this.updateData({
       city : evt.target.value,
     });
@@ -239,13 +245,13 @@ export default class EventCreateView extends SmartView {
     evt.preventDefault();
     this.updateData({
       typePoint : evt.target.value,
-      offers : offers[evt.target.value],
+      //offers : offers[evt.target.value],
     });
   }
 
   #formSubmitHandler = (evt) => {
     evt.preventDefault();
-    this._data.price = this.element.querySelector('.event__input--price').value;
+    this._data.price = +this.element.querySelector('.event__input--price').value;
     this.element.querySelectorAll('.event__offer-checkbox').forEach((element) => {
       this._data.offers[element.name-1].selected = element.checked;
     });
