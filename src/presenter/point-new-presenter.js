@@ -13,12 +13,12 @@ export default class PointNewPresenter {
     this.#changeData = changeData;
   }
 
-  init = () => {
+  init = (destinations, offers) => {
     if (this.#pointEditComponent !== null) {
       return;
     }
 
-    this.#pointEditComponent = new EventCreateView();
+    this.#pointEditComponent = new EventCreateView(destinations, offers);
 
     this.#pointEditComponent.setFormSubmitHandler(this.#handleFormSubmit);
     this.#pointEditComponent.setDeleteClickHandler(this.#handleDeleteClick);
