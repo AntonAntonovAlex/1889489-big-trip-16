@@ -1,6 +1,5 @@
 import ApiService from './api-service';
 import { MenuItem } from './const';
-//import { generatePoint } from './mock/point';
 import FilterModel from './model/filter-model';
 import PointsModel from './model/points-model';
 import FilterPresenter from './presenter/filter-presenter';
@@ -9,16 +8,10 @@ import { remove, render, RenderPosition } from './render';
 import SiteMenuView from './view/site-menu-view';
 import StatisticsView from './view/statistics-view';
 
-//const POINT_COUNT = 6;
 const AUTHORIZATION = 'Basic sgu9et8yodgt7o5';
 const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';
 
-//const points = Array.from({length: POINT_COUNT}, generatePoint);
-//console.log('моковая точка - ', points[0]);
-
-//const pointsModel = new PointsModel();
 const pointsModel = new PointsModel(new ApiService(END_POINT, AUTHORIZATION));
-//pointsModel.points = points;
 
 const filterModel = new FilterModel();
 const siteMenuComponent = new SiteMenuView();
@@ -36,10 +29,8 @@ const filterPresenter = new FilterPresenter(filterElement, filterModel);
 let statisticsComponent = null;
 let activeMenuItem = MenuItem.TABLE;
 
-//render(headerElement, siteMenuComponent, RenderPosition.BEFOREEND);
-
 const handleSiteMenuClick = (menuItem) => {
-  if (menuItem.id === activeMenuItem) {
+  if (menuItem.id === activeMenuItem || menuItem.id === '') {
     return;
   }
   headerElement.querySelectorAll('.trip-tabs__btn').forEach((button) => button.classList.remove('trip-tabs__btn--active'));
@@ -59,8 +50,6 @@ const handleSiteMenuClick = (menuItem) => {
       break;
   }
 };
-
-//siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
 
 tripPresenter.init();
 filterPresenter.init();

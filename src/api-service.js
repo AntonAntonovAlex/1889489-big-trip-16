@@ -1,6 +1,8 @@
 const Method = {
   GET: 'GET',
   PUT: 'PUT',
+  POST: 'POST',
+  DELETE: 'DELETE',
 };
 
 export default class ApiService {
@@ -31,7 +33,6 @@ export default class ApiService {
     const response = await this.#load({
       url: `points/${point.id}`,
       method: Method.PUT,
-      //body: JSON.stringify(point),
       body: JSON.stringify(this.#adaptToServer(point)),
       headers: new Headers({'Content-Type': 'application/json'}),
     });
@@ -39,6 +40,28 @@ export default class ApiService {
     const parsedResponse = await ApiService.parseResponse(response);
 
     return parsedResponse;
+  }
+
+  addPoint = async (point) => {
+    const response = await this.#load({
+      url: 'points',
+      method: Method.POST,
+      body: JSON.stringify(this.#adaptToServer(point)),
+      headers: new Headers({'Content-Type': 'application/json'}),
+    });
+
+    const parsedResponse = await ApiService.parseResponse(response);
+
+    return parsedResponse;
+  }
+
+  deletePoint = async (point) => {
+    const response = await this.#load({
+      url: `points/${point.id}`,
+      method: Method.DELETE,
+    });
+
+    return response;
   }
 
   #load = async ({
@@ -74,9 +97,9 @@ export default class ApiService {
       'is_favorite': point.isFavorite,
       'base_price': point.price,
       'type': point.typePoint,
+      'offers': point.offers.filter((offer) => offer.selected).map((offer) => ({id: offer.id, title: offer.title, price: offer.price})),
     };
 
-    // Ненужные ключи мы удаляем
     delete adaptedPoint.city;
     delete adaptedPoint.description;
     delete adaptedPoint.startDate;
@@ -86,7 +109,6 @@ export default class ApiService {
     delete adaptedPoint.price;
     delete adaptedPoint.typePoint;
 
-    //console.log(adaptedPoint);
     return adaptedPoint;
   }
 

@@ -7,7 +7,7 @@ import LoadingView from '../view/loading-view';
 import PointListView from '../view/point-list-view';
 import SortView from '../view/sort-view';
 import PointNewPresenter from './point-new-presenter';
-import PointPresenter from './point-presenter';
+import PointPresenter, {State as PointPresenterViewState} from './point-presenter';
 
 export default class TripPresenter {
   #tripContainer = null;
@@ -29,9 +29,6 @@ export default class TripPresenter {
     this.#tripContainer = tripContainer;
     this.#pointsModel = pointsModel;
     this.#filterModel = filterModel;
-
-    //const destinations = this.#pointsModel.destinations;
-    //console.log('с сервера destinations -', this.destinations);
 
     this.#pointNewPresenter = new PointNewPresenter(this.#pointListComponent, this.#handleViewAction);
   }
@@ -85,16 +82,31 @@ export default class TripPresenter {
     this.#pointPresenter.forEach((presenter) => presenter.resetView());
   }
 
-  #handleViewAction = (actionType, updateType, update) => {
+  #handleViewAction = async (actionType, updateType, update) => {
     switch (actionType) {
       case UserAction.UPDATE_POINT:
-        this.#pointsModel.updatePoint(updateType, update);
+        this.#pointPresenter.get(update.id).setViewState(PointPresenterViewState.SAVING);
+        try {
+          await this.#pointsModel.updatePoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenter.get(update.id).setViewState(PointPresenterViewState.ABORTING);
+        }
         break;
       case UserAction.ADD_POINT:
-        this.#pointsModel.addPoint(updateType, update);
+        this.#pointNewPresenter.setSaving();
+        try {
+          await this.#pointsModel.addPoint(updateType, update);
+        } catch(err) {
+          this.#pointNewPresenter.setAborting();
+        }
         break;
       case UserAction.DELETE_POINT:
-        this.#pointsModel.deletePoint(updateType, update);
+        this.#pointPresenter.get(update.id).setViewState(PointPresenterViewState.DELETING);
+        try {
+          await this.#pointsModel.deletePoint(updateType, update);
+        } catch(err) {
+          this.#pointPresenter.get(update.id).setViewState(PointPresenterViewState.ABORTING);
+        }
         break;
     }
   }
@@ -191,5 +203,4 @@ export default class TripPresenter {
       }
     }
   }
-
 }
