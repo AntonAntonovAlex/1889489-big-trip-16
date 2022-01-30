@@ -21,7 +21,7 @@ const headerElement = mainElement.querySelector('.trip-controls__navigation');
 const filterElement = mainElement.querySelector('.trip-controls__filters');
 const pageElement = document.querySelector('.page-main');
 const eventElement = pageElement.querySelector('.trip-events');
-const eventAddButton = document.querySelector('.trip-main__event-add-btn');
+const eventAddButtonElement = document.querySelector('.trip-main__event-add-btn');
 
 const tripPresenter = new TripPresenter(eventElement, pointsModel, filterModel);
 const filterPresenter = new FilterPresenter(filterElement, filterModel, pointsModel);
@@ -60,7 +60,7 @@ pointsModel.init().finally(() => {
   render(headerElement, siteMenuComponent, RenderPosition.BEFOREEND);
   siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
 
-  eventAddButton.addEventListener('click', (evt) => {
+  eventAddButtonElement.addEventListener('click', (evt) => {
     evt.preventDefault();
     remove(statisticsComponent);
     filterPresenter.destroy();
@@ -68,7 +68,7 @@ pointsModel.init().finally(() => {
     tripPresenter.destroy();
     tripPresenter.init();
     tripPresenter.createPoint();
-    eventAddButton.disabled = true;
+    eventAddButtonElement.disabled = true;
     activeMenuItem = MenuItem.TABLE;
     headerElement.querySelector(`[id=${MenuItem.TABLE}]`)?.classList.add('trip-tabs__btn--active');
     headerElement.querySelector(`[id=${MenuItem.STATISTICS}]`)?.classList.remove('trip-tabs__btn--active');

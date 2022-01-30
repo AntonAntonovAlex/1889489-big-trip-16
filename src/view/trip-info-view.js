@@ -4,11 +4,11 @@ import AbstractView from './abstract-view';
 
 const createTripInfoTemplate = (points) => {
   const sortedPoints = [...points].sort(sortPointDate);
-  const lengthArray = sortedPoints.length;
+  const pointsCount = sortedPoints.length;
   const firstPoint = sortedPoints[0];
-  const lastPoint = sortedPoints[lengthArray - 1];
+  const lastPoint = sortedPoints[pointsCount - 1];
   let pricePoint = 0;
-  const cities = new Set();
+  let cities = new Set();
 
   sortedPoints.forEach((point) => {
     pricePoint += point.price;
@@ -18,8 +18,8 @@ const createTripInfoTemplate = (points) => {
     });
   });
   const priceAllPoints = pricePoint;
-  const citiesArray = Array.from(cities);
-  const intermediateCity = citiesArray.length > 3 ? '...' : citiesArray[1];
+  cities = Array.from(cities);
+  const intermediateCity = cities.length > 3 ? '...' : cities[1];
 
   return (
     `<section class="trip-main__trip-info  trip-info">

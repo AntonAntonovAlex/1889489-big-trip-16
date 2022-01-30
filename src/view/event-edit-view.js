@@ -41,8 +41,8 @@ ${(pointOffers.length === 0) ? '' : `<h3 class="event__section-title  event__sec
 
 </section>`);
 
-const createEventEditTemplate = (data, destinations, offers) => {
-  const {endDate, startDate, price, typePoint, city, isDisabled, isSaving, isDeleting} = data;
+const createEventEditTemplate = (event, destinations, offers) => {
+  const {endDate, startDate, price, typePoint, city, isDisabled, isSaving, isDeleting} = event;
   const pointDestination = destinations.find((destination) => destination.name === city);
   return `<form class="event event--edit" action="#" method="post">
   <header class="event__header">
@@ -97,7 +97,7 @@ const createEventEditTemplate = (data, destinations, offers) => {
   </header>
   <section class="event__details">
 
-  ${createEventOffers(data.offers)}
+  ${createEventOffers(event.offers)}
     <section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination"> Destination</h3>
       <p class="event__destination-description">

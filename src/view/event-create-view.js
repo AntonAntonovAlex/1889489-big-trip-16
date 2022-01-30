@@ -41,10 +41,10 @@ ${(pointOffers.length === 0) ? '' : `<h3 class="event__section-title  event__sec
 
 </section>`);
 
-const createEventEditTemplate = (data, destinations, offers) => {
-  const {endDate, startDate, price, city, isDisabled, isSaving} = data;
+const createEventEditTemplate = (event, destinations, offers) => {
+  const {endDate, startDate, price, city, isDisabled, isSaving} = event;
   const pointDestination = destinations.find((destination) => destination.name === city);
-  let {typePoint} = data;
+  let {typePoint} = event;
   typePoint = typePoint === undefined ? 'Flight' : typePoint;
   return `<form class="event event--edit" action="#" method="post">
   <header class="event__header">
@@ -93,7 +93,7 @@ const createEventEditTemplate = (data, destinations, offers) => {
   </header>
   <section class="event__details">
 
-  ${typePoint === undefined ? '' : createEventOffers(data.offers)}
+  ${typePoint === undefined ? '' : createEventOffers(event.offers)}
     <section class="event__section  event__section--destination">
       <h3 class="event__section-title  event__section-title--destination">
       ${city === undefined ? '': 'Destination'}</h3>
