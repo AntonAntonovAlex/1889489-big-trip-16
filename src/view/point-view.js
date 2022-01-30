@@ -8,11 +8,13 @@ const createEventOffer = (offers) => {
     return offerTemplate;
   }
   offers.forEach((offer) => {
-    offerTemplate += `<li class="event__offer">
+    if (offer.selected) {
+      offerTemplate += `<li class="event__offer">
     <span class="event__offer-title">${offer.title}</span>
     &plus;&euro;&nbsp;
     <span class="event__offer-price">${offer.price}</span>
   </li>`;
+    }
   });
   return offerTemplate;
 };

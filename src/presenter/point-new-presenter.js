@@ -1,4 +1,3 @@
-import { nanoid } from 'nanoid';
 import { UpdateType, UserAction } from '../const';
 import { remove, render, RenderPosition } from '../render';
 import EventCreateView from '../view/event-create-view';
@@ -41,6 +40,25 @@ export default class PointNewPresenter {
     document.querySelector('.trip-main__event-add-btn').disabled = false;
   }
 
+  setSaving = () => {
+    this.#pointEditComponent.updateData({
+      isDisabled: true,
+      isSaving: true,
+    });
+  }
+
+  setAborting = () => {
+    const resetFormState = () => {
+      this.#pointEditComponent.updateData({
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      });
+    };
+
+    this.#pointEditComponent.shake(resetFormState);
+  }
+
   #escKeyDownHandler = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
@@ -52,9 +70,8 @@ export default class PointNewPresenter {
     this.#changeData(
       UserAction.ADD_POINT,
       UpdateType.MINOR,
-      {id: nanoid(), ...point},
+      point,
     );
-    this.destroy();
   }
 
   #handleDeleteClick = () => {

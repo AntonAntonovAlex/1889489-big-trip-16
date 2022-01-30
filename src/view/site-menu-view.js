@@ -18,13 +18,6 @@ export default class SiteMenuView extends AbstractView {
     this.element.addEventListener('click', this.#menuClickHandler);
   }
 
-  /*setMenuItem = (menuItem) => {
-    const item = this.element.querySelector(`[id=${menuItem}]`);
-    if (item !== null) {
-      item.classList.add('trip-tabs__btn--active');
-    }
-  }*/
-
   #menuClickHandler = (evt) => {
     evt.preventDefault();
     this._callback.menuClick(evt.target);

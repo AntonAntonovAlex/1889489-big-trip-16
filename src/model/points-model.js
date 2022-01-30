@@ -10,27 +10,7 @@ export default class PointsModel extends AbstractObservable {
   constructor(apiService) {
     super();
     this.#apiService = apiService;
-
-    /*this.#apiService.points.then((points) => {
-      console.log('с сервера', points[1]);
-      console.log(points.map(this.#adaptToClient));
-    });*/
-
-    /*this.#apiService.destinations.then((destinations) => {
-      this.#destinations = destinations;
-      console.log('с сервера destinations -', destinations);
-    });*/
-
-    //console.log('с сервера destinations -', this.#destinations);
-
-    /*this.#apiService.offers.then((offers) => {
-      console.log('с сервера offers -', offers);
-    });*/
   }
-
-  /*set points(points) {
-    this.#points = [...points];
-  }*/
 
   get points() {
     return this.#points;
@@ -46,11 +26,10 @@ export default class PointsModel extends AbstractObservable {
 
   init = async () => {
     try {
-      const points = await this.#apiService.points;
-      this.#points = points.map(this.#adaptToClient);
-      //console.log('this.#points - ', this.#points);
       this.#destinations = await this.#apiService.destinations;
       this.#offers = await this.#apiService.offers;
+      const points = await this.#apiService.points;
+      this.#points = points.map(this.#adaptToClient);
     } catch(err) {
       this.#points = [];
     }
@@ -79,28 +58,34 @@ export default class PointsModel extends AbstractObservable {
     }
   }
 
-  addPoint = (updateType, update) => {
-    this.#points = [
-      update,
-      ...this.#points,
-    ];
-
-    this._notify(updateType, update);
+  addPoint = async (updateType, update) => {
+    try {
+      const response = await this.#apiService.addPoint(update);
+      const newPoint = this.#adaptToClient(response);
+      this.#points = [newPoint, ...this.#points];
+      this._notify(updateType, newPoint);
+    } catch(err) {
+      throw new Error('Can\'t add task');
+    }
   }
 
-  deletePoint = (updateType, update) => {
+  deletePoint = async (updateType, update) => {
     const index = this.#points.findIndex((point) => point.id === update.id);
 
     if (index === -1) {
       throw new Error('Can\'t delete unexisting point');
     }
 
-    this.#points = [
-      ...this.#points.slice(0, index),
-      ...this.#points.slice(index + 1),
-    ];
-
-    this._notify(updateType);
+    try {
+      await this.#apiService.deletePoint(update);
+      this.#points = [
+        ...this.#points.slice(0, index),
+        ...this.#points.slice(index + 1),
+      ];
+      this._notify(updateType);
+    } catch(err) {
+      throw new Error('Can\'t delete task');
+    }
   }
 
   #adaptToClient = (point) => {
@@ -113,16 +98,14 @@ export default class PointsModel extends AbstractObservable {
       pictures: point['destination']['pictures'],
       price: point['base_price'],
       typePoint: point['type'],
+      offers: this.offers.find((offer) => offer.type === point['type']).offers
+        .map((offer) => ({...offer, selected: !!point.offers.find((pointOffer) => pointOffer.id === offer.id)})),
     };
 
-    // Ненужные ключи мы удаляем
     delete adaptedPoint['destination'];
-    //delete adaptedPoint['destination']['name'];
-    //delete adaptedPoint['destination']['description'];
     delete adaptedPoint['date_from'];
     delete adaptedPoint['date_to'];
     delete adaptedPoint['is_favorite'];
-    //delete adaptedPoint['destination']['pictures'];
     delete adaptedPoint['base_price'];
     delete adaptedPoint['type'];
 
