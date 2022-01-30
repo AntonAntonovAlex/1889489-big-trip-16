@@ -3,6 +3,7 @@ import { MenuItem } from './const';
 import FilterModel from './model/filter-model';
 import PointsModel from './model/points-model';
 import FilterPresenter from './presenter/filter-presenter';
+import TripInfoPresenter from './presenter/trip-info-presenter';
 import TripPresenter from './presenter/trip-presenter';
 import { remove, render, RenderPosition } from './render';
 import SiteMenuView from './view/site-menu-view';
@@ -12,7 +13,6 @@ const AUTHORIZATION = 'Basic sgu9et8yodgt7o5';
 const END_POINT = 'https://16.ecmascript.pages.academy/big-trip';
 
 const pointsModel = new PointsModel(new ApiService(END_POINT, AUTHORIZATION));
-
 const filterModel = new FilterModel();
 const siteMenuComponent = new SiteMenuView();
 
@@ -24,7 +24,8 @@ const eventElement = pageElement.querySelector('.trip-events');
 const eventAddButton = document.querySelector('.trip-main__event-add-btn');
 
 const tripPresenter = new TripPresenter(eventElement, pointsModel, filterModel);
-const filterPresenter = new FilterPresenter(filterElement, filterModel);
+const filterPresenter = new FilterPresenter(filterElement, filterModel, pointsModel);
+const tripInfoPresenter = new TripInfoPresenter(mainElement, pointsModel);
 
 let statisticsComponent = null;
 let activeMenuItem = MenuItem.TABLE;
@@ -55,6 +56,7 @@ tripPresenter.init();
 filterPresenter.init();
 
 pointsModel.init().finally(() => {
+  tripInfoPresenter.init();
   render(headerElement, siteMenuComponent, RenderPosition.BEFOREEND);
   siteMenuComponent.setMenuClickHandler(handleSiteMenuClick);
 
